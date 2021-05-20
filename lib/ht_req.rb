@@ -10,9 +10,6 @@ module HtReq
   class Error < StandardError; end
   
   @error =[]
-  def self.sample_send()
-    self.send_request()
-  end
   
   def self.help()
     puts <<"EOS"
@@ -36,11 +33,8 @@ EOS
   end
   
   
-  def self.get_json_data()
-    res = self.send_request({
-      :method=>'Get',
-      :url=>'https://kyozai.net/get_teste'
-    })
+  def self.get_json_data(param)
+    res = self.send_request(param)
     if res.code != '200'
       return false
     else
