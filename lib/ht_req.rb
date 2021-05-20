@@ -42,15 +42,6 @@ EOS
     end
   end
   
-  def self.abc()
-    HtReq.send_request({
-        :method=>"GET",
-        :url=>'https://api.line.me/oauth2/v2.1/verify',
-        :params=>{
-          :access_token=>'eyJhbGciOiJIUzI1NiJ9.zEAroBu09HIfURerCTytlUGbA_GQOFBQMC3oWBzkqVpxtqvf1K6T7QLXKmKSHOWqoo9US6s1atY2_5AVj_D3RREbIGE0ytj53W3HXc9QGSBVmkfDa_fua9vuQNBI22Pobyj4nuaGWpyh-lCHFqClTimjr7NhJvel-0NjkD1fcDM.d_UlNNMNh69sPno38_gAXSzGv5bH3VlsG18c19Cfay0'
-        }
-      }).body
-  end
   
   
   #テスト送信してみて問題ないか確かめる
