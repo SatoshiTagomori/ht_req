@@ -34,7 +34,7 @@ EOS
   
   
   def self.get_json_data(param)
-    res = self.send_request(param)
+    res = self.request(param)
     if res.code != '200'
       return false
     else
