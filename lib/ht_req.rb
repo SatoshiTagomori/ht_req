@@ -45,23 +45,23 @@ EOS
   
   
   #テスト送信してみて問題ないか確かめる
-  def self.test_send(param={})
-    self.send_request(param).code == '200' ? true:false
+  def self.test_request(param={})
+    self.request(param).code == '200' ? true:false
   end
   
   
   #メインの関数
-  def self.send_request(param={})
+  def self.request(param={})
     #methodがなければGETにする
     request_method = param[:method].nil? ? 'GET': param[:method]
-    #urlがなければとりあえず我がサイトにしておく
-    if param[:url].nil? then param[:url]='https://kyozai.net/' end
+    #urlがなければとりあえず自分のサイトに送っておく
+    if param[:url].nil? then param[:url]='https://kyozai.net/gemtest/ht_req/1' end
     #urlをパースする
     url = URI.parse(param[:url])
     #pathがなければrootにする
     if url.path=='' then url.path='/' end
     #Getの場合は必要であればパラメータを設定する
-    url = self.SetGetParams(request_method,url,param)
+    url = self.set_get_params_to_url(url,param[:params],request_method)
     #httpのインスタンスを作成
     http = Net::HTTP.new(url.host,url.port)
     #ssl通信を許可
@@ -72,9 +72,9 @@ EOS
       #Postの場合とGetの場合を両方インスタンス化
       req = eval('Net::HTTP::'+request_method.capitalize+'.new(url)')
       #リクエストヘッダを設定する
-      req=self.SetRequestHeader(req,param)
+      req=self.set_request_header(req,param)
       #Postの場合、パラメータがあれば送る
-      req = self.SetFormData(req,request_method,param)
+      req = self.set_post_param(req,param[:params],request_method)
       http.request(req)
     end
     if res.code != '200'
@@ -87,7 +87,7 @@ EOS
     res
   end
   
-  def self.SetRequestHeader(req,param)
+  def self.set_request_header(req,param)
     if !param[:header].nil?
       param[:header].each{|k,v|
         req[k]=v
@@ -97,17 +97,22 @@ EOS
   end
   
   #getのパラメータを設定する
-  def self.SetGetParams(request_method,url,param)
-    if request_method.capitalize=='Get' && !param[:params].nil?
-      url.query = URI.encode_www_form(param[:params]).gsub("+","%20")
+  #urlはパースしたものでも文字列で与えてもいいが、
+  #返り値はパースしたものになる
+  def self.set_get_params_to_url(url,param,request_method='GET')
+    #文字列がセットされた場合はパースする
+    if url.class == String then url = URI.parse(url) end
+    #パラメータをセットする
+    if request_method.capitalize=='Get' && !param.nil?
+      url.query = URI.encode_www_form(param).gsub("+","%20")
     end
     url
   end
   
   #Postの場合はフォームデータを入れる
-  def self.SetFormData(req,request_method,param)
-      if request_method.capitalize=='Post' && !param[:params].nil?
-        req.set_form_data(param[:params])
+  def self.set_post_param(req,param,request_method="POST")
+      if request_method.capitalize=='Post' && !param.nil?
+        req.set_form_data(param)
       end
       req
   end
